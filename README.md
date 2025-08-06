@@ -54,7 +54,9 @@ sudo echo "deb http://download.proxmox.com/debian/pve bookworm pve-no-subscripti
 apt install proxmox-auto-install-assistant
 ```
 - Download the required ProxmoVE ISO image
- wget https://enterprise.proxmox.com/iso/proxmox-ve_8.3-1.iso
+```bash
+wget https://enterprise.proxmox.com/iso/proxmox-ve_8.3-1.iso
+```
 - Let's cook or take my answer.toml
 ```toml
 [global]
