@@ -1,0 +1,92 @@
+#!/bin/bash
+
+LOCAL_POOL=/var/lib/vz/template/iso
+NAME=$2
+function helpcli() {
+	echo "alma   | Download Alma Linux 8 | 9 | 10"
+	echo "rocky  | Download Rocky Linux 8 | 9 | 10"
+	echo "centos | Download centos linux stream "
+	echo "debian | Download Debian Linux 11 | 12"
+	echo "ubuntu | Download Ubuntu Linux 20 | 22 | 24 | 25"
+	echo "fedora | Download fedora server "
+}
+function almalinux() {
+	if [ $NAME == "8"  ] ; then
+		echo "Download alma linux 8"
+		wget https://repo.almalinux.org/almalinux/8.10/isos/x86_64/AlmaLinux-8.10-x86_64-minimal.iso -P $LOCAL_POOL
+	elif [ $NAME == "9" ]; then 
+		echo "Download alma linux 9"
+		wget https://repo.almalinux.org/almalinux/9.6/isos/x86_64/AlmaLinux-9.6-x86_64-minimal.iso -P $LOCAL_POOL
+	elif [ $NAME == "10" ]; then
+		echo "Donwload alma linux 10"
+		wget https://repo.almalinux.org/almalinux/10/isos/x86_64/AlmaLinux-10.0-x86_64-minimal.iso -P $LOCAL_POOL
+	else 
+		echo "There is no such version"
+	fi
+}
+
+function ubuntulinux() {
+	if [ $NAME == "20" ]; then
+		echo "Download ubuntu linux server 20.04"
+		wget https://releases.ubuntu.com/20.04/ubuntu-20.04.6-live-server-amd64.iso -P $LOCAL_POOL
+	elif [ $NAME == "22" ]; then
+		echo "Download ubuntu linux server 22.04"
+		wget https://releases.ubuntu.com/releases/22.04/ubuntu-22.04.5-live-server-amd64.iso $LOCAL_POOL
+	elif [ $NAME == "24" ]; then 
+		echo "Download ubuntu linux server 24.04"
+		wget https://releases.ubuntu.com/24.04.2/ubuntu-24.04.2-live-server-amd64.iso -P $LOCAL_POOL
+	elif [ $NAME == "25" ]; then
+		echo "Download ubuntu linux server 25.04"
+		wget https://releases.ubuntu.com/25.04/ubuntu-25.04-live-server-amd64.iso -P $LOCAL_POOL
+	else 
+		echo "There is no such version"
+	fi
+}
+function rockylinux() {
+ 	if [ $NAME == "8" ]; then
+	 echo "Download rockylinux 8"
+	 wget https://download.rockylinux.org/pub/rocky/8/isos/x86_64/Rocky-8.10-x86_64-minimal.iso -P $LOCAL_POOL
+	elif [ $NAME == "9" ]; then
+		echo "Download rockylinux 9"
+		wget https://download.rockylinux.org/pub/rocky/9/isos/x86_64/Rocky-9.6-x86_64-minimal.iso -P $LOCAL_POOL
+	elif [ $NAME == "10" ]; then
+		echo "Download rockylinux 10"
+		wget https://download.rockylinux.org/pub/rocky/10/isos/x86_64/Rocky-10.0-x86_64-minimal.iso -P $LOCAL_POOL
+	else 
+		echo "There is no such version"
+	fi
+}
+function debianlinux() {
+ 	if [ $NAME == "11" ]; then 
+	 echo "Download debian linux 11"
+	 wget  https://cdimage.debian.org/cdimage/archive/11.11.0/amd64/iso-cd/debian-11.11.0-amd64-netinst.iso  -P $LOCAL_POOL
+	elif [ $NAME == "12" ]; then
+		echo " Download debian linux 12"
+		wget https://cdimage.debian.org/debian-cd/current/amd64/iso-cd/debian-12.11.0-amd64-netinst.iso -P $LOCAL_POOL
+	else 
+		echo "There is no such version"
+	fi
+}
+function fedoralinux() {
+	echo "Download Fedora server 42"
+	wget https://download.fedoraproject.org/pub/fedora/linux/releases/42/Server/x86_64/iso/Fedora-Server-netinst-x86_64-42-1.1.iso  -P $LOCAL_POOL
+
+}
+function centoslinux() {
+	echo "Download centos linux stream 10"
+	wget https://mirrors.centos.org/mirrorlist?path=/10-stream/BaseOS/x86_64/iso/CentOS-Stream-10-latest-x86_64-dvd1.iso -P $LOCAL_POOL
+}
+
+while [ -n "$1" ]
+	do
+    case "$1" in
+    alma )almalinux;;
+	  ubuntu )ubuntulinux;;
+		debian )debianlinux;;
+		rocky )rockylinux;;
+		centos )centoslinux;;
+		fedora )fedoralinux;;
+		help )helpcli;;
+		esac
+	shift
+done
