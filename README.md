@@ -23,7 +23,7 @@
 ### Установка
 * скачиваем скрипт 
 ```bash 
-wget -P /var/lib/vz/snippets
+wget  https://raw.githubusercontent.com/1xtier/pve-isohub/refs/heads/main/isohub -P /var/lib/vz/snippets
 cd /var/lib/vz/snippets
 chmod +x isohub
 ```
