@@ -1,0 +1,19 @@
+[global]
+keyboard = "en-us"
+country = "ru"
+fqdn = "pve.redfex.loc"
+mailto = "mail@no.invalid"
+timezone = "Europe/Samara"
+root_password = ""
+root_ssh_keys = [
+    ""
+]
+
+[network]
+source = "from-dhcp"
+
+[disk-setup]
+filesystem = "ext4"
+lvm.swapsize = 0
+lvm.maxvz  = 0
+disk_list = ['sda'] 

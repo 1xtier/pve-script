@@ -1,0 +1,17 @@
+version: '3'
+vars:
+  PROXMOX: proxmox-ve_8.3-1.iso
+  CONFIG: answer.toml
+  DIR_PATH: /opt/autoinstall-pve
+tasks:
+  default:
+    cmds:
+      - task --list-all
+  build-iso:
+    desk: Build auto install iso images proxmox-ve_8.3-1.iso
+    cmds:
+      - proxmox-auto-install-assistant prepare-iso "{{.DIR_PATH}}"/"{{.PROXMOX}}" --fetch-from iso --answer-file "{{.DIR_PATH}}"/"{{.CONFIG}}"
+  env_native: 
+    desk: Installing the native environment for building an iso image
+    cmds:
+      - /bin/bash ./env.sh --native
