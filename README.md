@@ -53,7 +53,7 @@ It is designed to create an ISO image for automatic installation on a server!
 proxmox-auto-install-assistant prepare-iso /path/proxmox-ve_8.3-1.iso --fetch-from iso --answer-file /path/answer.toml
 ```
 ### :computer: Automation
-We will use the utility **taskfile**
+We will use the utility **taskfile**\
 :hammer: Setting up an environment
 ```bash
 task env_native:
