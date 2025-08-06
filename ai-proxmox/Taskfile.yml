@@ -14,4 +14,4 @@ tasks:
   env_native: 
     desk: Installing the native environment for building an iso image
     cmds:
-      - /bin/bash ./env.sh --native
+      - /bin/bash ./env.sh 

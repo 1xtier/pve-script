@@ -44,11 +44,40 @@ isohub alma 8
 It is designed to create an ISO image for automatic installation on a server!
 ### :computer: Manual assembly
 - Connecting free proxmox repositories
+```bash
+sudo wget http://download.proxmox.com/debian/proxmox-ve-release-6.x.gpg -O /etc/apt/trusted.gpg.d/proxmox-ve-release-6.x.gpg
+sudo chmod +r /etc/apt/trusted.gpg.d/proxmox-ve-release-6.x.gpg
+sudo echo "deb http://download.proxmox.com/debian/pve bookworm pve-no-subscription" >> /etc/apt/sources.list
+```
 - Installing proxmox-auto-install-assistant
+```bash
+apt install proxmox-auto-install-assistant
+```
 - Download the required ProxmoVE ISO image
+ wget https://enterprise.proxmox.com/iso/proxmox-ve_8.3-1.iso
 - Let's cook or take my answer.toml
-- Well, we execute the command 
-**I will attach the installation instructions for proxmox-auto-install-assistant later**
+```toml
+[global]
+keyboard = "en-us"
+country = "ru"
+fqdn = "pve.redfex.loc"
+mailto = "mail@no.invalid"
+timezone = "Europe/Samara"
+root_password = ""
+root_ssh_keys = [
+    ""
+]
+
+[network]
+source = "from-dhcp"
+
+[disk-setup]
+filesystem = "ext4"
+lvm.swapsize = 0
+lvm.maxvz  = 0
+disk_list = ['sda'] 
+```
+- Well, we execute the command\ 
 ```bash
 proxmox-auto-install-assistant prepare-iso /path/proxmox-ve_8.3-1.iso --fetch-from iso --answer-file /path/answer.toml
 ```
