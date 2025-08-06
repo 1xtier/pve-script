@@ -1,5 +1,5 @@
 ## PVE-ISOHUB
-### Поддерживаемы iso образы linux
+### Linux iso images are supported
 - ubuntu linux server (live)
     * 20.04
     * 22.04
@@ -20,22 +20,22 @@
     * 42
 - centos linux 
     * 10 - stream
-### Установка
-* скачиваем скрипт 
+### Install 
+:one: download the script
 ```bash 
 wget  https://raw.githubusercontent.com/1xtier/pve-isohub/refs/heads/main/isohub -P /var/lib/vz/snippets
 cd /var/lib/vz/snippets
 chmod +x isohub
 ```
-* ставим алиас 
+:two: setting an alias
 ```bash
 vim ~/.bashrc
-
-alias isohub="/var/lib/vz/snippets/.isohub"
+alias isohub="/var/lib/vz/snippets/./isohub"
+source ~/.bashrc
 ```
-* работа с скриптом
+:three: Working with the script
 ```bash
-узнаем список версий
+Find out the list of linux images
 isohub help
 isohub alma 8
 ```
