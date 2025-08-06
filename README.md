@@ -39,3 +39,26 @@ Find out the list of linux images
 isohub help
 isohub alma 8
 ```
+## AI-Proxmox 
+### :scroll: auto install proxmox-pve
+It is designed to create an ISO image for automatic installation on a server!
+### :computer: Manual assembly
+- Connecting free proxmox repositories
+- Installing proxmox-auto-install-assistant
+- Download the required ProxmoVE ISO image
+- Let's cook or take my answer.toml
+- Well, we execute the command 
+**I will attach the installation instructions for proxmox-auto-install-assistant later**
+```bash
+proxmox-auto-install-assistant prepare-iso /path/proxmox-ve_8.3-1.iso --fetch-from iso --answer-file /path/answer.toml
+```
+### :computer: Automation
+We will use the utility **taskfile**
+:hammer: Setting up an environment
+```bash
+task env_native:
+```
+:wrench: Launching the build
+```bash
+task build-iso
+```
