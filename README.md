@@ -23,7 +23,7 @@
 ### :bulb: Install 
 :one: download the script
 ```bash 
-wget  https://raw.githubusercontent.com/1xtier/pve-isohub/refs/heads/main/isohub -P /var/lib/vz/snippets
+wget https://raw.githubusercontent.com/1xtier/pve-script/refs/heads/main/isohub/isohub -P /var/lib/vz/snippets
 cd /var/lib/vz/snippets
 chmod +x isohub
 ```
@@ -39,6 +39,18 @@ Find out the list of linux images
 isohub help
 isohub alma 8
 ```
+## :arrow_forward: imageshub
+### :bulb: Install imageshub script
+```bash
+wget https://raw.githubusercontent.com/1xtier/pve-script/refs/heads/main/imageshub/imageshub -P /var/lib/vz/snippets
+cd /var/lib/vz/snippent
+chmod +x imageshub
+vim ~/.bashrc
+alias imageshub="/var/lib/vz/snippets/./imageshub"
+source ~/.bashrc
+imageshub help
+```
+### 
 ## :arrow_forward: AI-Proxmox 
 ### :scroll: auto install proxmox-pve
 It is designed to create an ISO image for automatic installation on a server!
