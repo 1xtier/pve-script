@@ -1,0 +1,319 @@
+#!/bin/bash
+CORES=1
+MEMORY=1024
+NAME=$2
+POOL=
+NET=
+# 
+IMAGESPOOL=/tmp/imageshub
+if [ -d $IMAGESPOOL ]; then
+   echo "$IMAGESPOOL The directory exists"
+else
+   echo "$IMAGESPOOL The directory does not exist"
+   echo "Creating $IMAGESPOOL"
+   mkdir $IMAGESPOOL 
+fi
+function removeimgase() {
+ rm -f $IMAGESPOOL/*
+}
+function helpcli() {
+	echo "alma   | Download Alma Linux 8 | 9"
+	echo "rocky  | Download Rocky Linux 8 | 9 | 10"
+	echo "centos | Download centos linux stream "
+	echo "debian | Download Debian Linux 11 | 12"
+	echo "ubuntu | Download Ubuntu Linux 20 | 22 | 24 | 25"
+	echo "fedora | Download fedora server "
+}
+function almalinux() {
+  local UUID_VM=9000
+  local NAME_VM=almalinux-8
+	if [ $NAME == "8"  ] ; then
+		echo "[1/6]-Download cloud-init images $NAME_VM"
+		wget https://repo.almalinux.org/almalinux/8/cloud/x86_64/images/AlmaLinux-8-GenericCloud-8.10-20240530.x86_64.qcow2 -P $IMAGESPOOL
+    qemu-img resize $IMAGESPOOL/AlmaLinux-8-GenericCloud-8.10-20240530.x86_64.qcow2 +5G
+    echo "[2/6]-Create VM"
+    qm create $UUID_VM --name $NAME_VM --ostype l24 --cpu cputype=host --cores $CORES --socket 1 --memory $MEMORY --scsihw virtio-scsi-pci --net0 virtio,bridge=$NET
+    echo "[3/6]-Configure VM"
+    qm importdisk $UUID_VM $IMAGESPOOL/AlmaLinux-8-GenericCloud-8.10-20240530.x86_64.qcow2 $POOL
+    qm set $UUID_VM --scsihw virtio-scsi-pci --scsi0 $POOL:vm-$UUID_VM-disk-0
+    qm set $UUID_VM --boot c --bootdisk scsi0
+    echo "[5/6]-Configure Cloud-init"
+    qm set $UUID_VM --ide2 $POOL:cloudinit
+    qm set $UUID_VM --ipconfig0 ip=dhcp
+    qm set $UUID_VM --ciuser images --cipassword 'imageshub'
+    qm set $UUID_VM --sshkey "$(cat ~/.ssh/id_rsa.pub)"
+    echo "[5/6]-Saving a VM as a template "
+    qm template $UUID_VM
+    echo "[6/6]-Clearing the directory $IMAGESPOOL"
+    removeimgase
+	elif [ $NAME == "9" ]; then
+    local UUID_VM=9002
+    local NAME_VM=almalinux-9
+		echo "[1/6]-Download cloud-init images $NAME_VM"
+		wget https://repo.almalinux.org/almalinux/9/cloud/x86_64/images/AlmaLinux-9-GenericCloud-latest.x86_64.qcow2 -P $IMAGESPOOL
+    qemu-img resize $IMAGESPOOL/AlmaLinux-9-GenericCloud-latest.x86_64.qcow2 +5G
+    echo "[2/6]-Create VM"
+    qm create $UUID_VM --name $NAME_VM --ostype l24 --cpu cputype=host --cores $CORES --socket 1 --memory $MEMORY --scsihw virtio-scsi-pci --net0 virtio,bridge=$NET
+    echo "[3/6]-Configure VM"
+    qm importdisk $UUID_VM $IMAGESPOOL/AlmaLinux-9-GenericCloud-latest.x86_64.qcow2 $POOL
+    qm set $UUID_VM --scsihw virtio-scsi-pci --scsi0 $POOL:vm-$UUID_VM-disk-0
+    qm set $UUID_VM --boot c --bootdisk scsi0
+    echo "[5/6]-Configure Cloud-init"
+    qm set $UUID_VM --ide2 $POOL:cloudinit
+    qm set $UUID_VM --ipconfig0 ip=dhcp
+    qm set $UUID_VM --ciuser images --cipassword 'imageshub'
+    echo "[5/6]-Saving a VM as a template "
+    qm template $UUID_VM
+    echo "[6/6]-Clearing the directory $IMAGESPOOL"
+    removeimgase
+	else 
+		echo "There is no such version"
+	fi
+}
+
+function ubuntulinux() {
+  local UUID_VM=9050
+  local NAME_VM=ubuntuserver-20.04
+	if [ $NAME == "20" ]; then
+		echo "[1/6]-Download cloud-init images $NAME_VM"
+		wget https://cloud-images.ubuntu.com/focal/current/focal-server-cloudimg-amd64.img -P $IMAGESPOOL
+    mv $IMAGESPOOL/focal-server-cloudimg-amd64.img  $IMAGESPOOL/focal-server-cloudimg-amd64.qcow2
+    qemu-img resize $IMAGESPOOL/focal-server-cloudimg-amd64.qcow2 +13G
+    echo "[2/6]-Create VM"
+    qm create $UUID_VM --name $NAME_VM --ostype l24 --cpu cputype=host --cores $CORES --socket 1 --memory $MEMORY --scsihw virtio-scsi-pci --net0 virtio,bridge=$NET
+    echo "[3/6]-Configure VM"
+    qm importdisk $UUID_VM $IMAGESPOOL/focal-server-cloudimg-amd64.qcow2 $POOL
+    qm set $UUID_VM --scsihw virtio-scsi-pci --scsi0 $POOL:vm-$UUID_VM-disk-0
+    qm set $UUID_VM --boot c --bootdisk scsi0
+    echo "[5/6]-Configure Cloud-init"
+    qm set $UUID_VM --ide2 $POOL:cloudinit
+    qm set $UUID_VM --ipconfig0 ip=dhcp
+    qm set $UUID_VM --ciuser images --cipassword 'imageshub'
+    qm set $UUID_VM --sshkey "$(cat ~/.ssh/id_rsa.pub)"
+    echo "[5/6]-Saving a VM as a template "
+    qm template $UUID_VM
+    echo "[6/6]-Clearing the directory $IMAGESPOOL"
+    removeimgase
+	elif [ $NAME == "22" ]; then
+    local UUID_VM=9051
+    local NAME_VM=ubuntuserver-22.04
+		echo "[1/6]-Download cloud-init images $NAME_VM"
+		wget https://cloud-images.ubuntu.com/jammy/current/jammy-server-cloudimg-amd64.img -P $IMAGESPOOL
+    mv $IMAGESPOOL/jammy-server-cloudimg-amd64.img $IMAGESPOOL/jammy-server-cloudimg-amd64.qcow2
+    qemu-img resize $IMAGESPOOL/jammy-server-cloudimg-amd64.qcow2 +13G
+    echo "[2/6]-Create VM"
+    qm create $UUID_VM --name $NAME_VM --ostype l24 --cpu cputype=host --cores $CORES --socket 1 --memory $MEMORY --scsihw virtio-scsi-pci --net0 virtio,bridge=$NET
+    echo "[3/6]-Configure VM"
+    qm importdisk $UUID_VM $IMAGESPOOL/jammy-server-cloudimg-amd64.qcow2 $POOL
+    qm set $UUID_VM --scsihw virtio-scsi-pci --scsi0 $POOL:vm-$UUID_VM-disk-0
+    qm set $UUID_VM --boot c --bootdisk scsi0
+    echo "[5/6]-Configure Cloud-init"
+    qm set $UUID_VM --ide2 $POOL:cloudinit
+    qm set $UUID_VM --ipconfig0 ip=dhcp
+    qm set $UUID_VM --ciuser images --cipassword 'imageshub'
+    qm set $UUID_VM --sshkey "$(cat ~/.ssh/id_rsa.pub)"
+    echo "[5/6]-Saving a VM as a template "
+    qm template $UUID_VM
+    echo "[6/6]-Clearing the directory $IMAGESPOOL"
+    removeimgase
+	elif [ $NAME == "24" ]; then 
+		local UUID_VM=9052
+    local NAME_VM=ubuntuserver-24.04
+		echo "[1/6]-Download cloud-init images $NAME_VM"
+		wget https://cloud-images.ubuntu.com/noble/20250725/noble-server-cloudimg-amd64.img -P $IMAGESPOOL
+    mv $IMAGESPOOL/noble-server-cloudimg-amd64.img  $IMAGESPOOL/noble-server-cloudimg-amd64.qcow2
+    qemu-img resize $IMAGESPOOL/noble-server-cloudimg-amd64.qcow2 +13G
+    echo "[2/6]-Create VM"
+    qm create $UUID_VM --name $NAME_VM --ostype l24 --cpu cputype=host --cores $CORES --socket 1 --memory $MEMORY --scsihw virtio-scsi-pci --net0 virtio,bridge=$NET
+    echo "[3/6]-Configure VM"
+    qm importdisk $UUID_VM $IMAGESPOOL/noble-server-cloudimg-amd64.qcow2 $POOL
+    qm set $UUID_VM --scsihw virtio-scsi-pci --scsi0 $POOL:vm-$UUID_VM-disk-0
+    qm set $UUID_VM --boot c --bootdisk scsi0
+    echo "[5/6]-Configure Cloud-init"
+    qm set $UUID_VM --ide2 $POOL:cloudinit
+    qm set $UUID_VM --ipconfig0 ip=dhcp
+    qm set $UUID_VM --ciuser images --cipassword 'imageshub'
+    qm set $UUID_VM --sshkey "$(cat ~/.ssh/id_rsa.pub)"
+    echo "[5/6]-Saving a VM as a template "
+    qm template $UUID_VM
+    echo "[6/6]-Clearing the directory $IMAGESPOOL"
+    removeimgase
+	else 
+		echo "There is no such version"
+	fi
+}
+function rockylinux() {
+  local UUID_VM=9010
+  local NAME_VM=rockylinux-8
+ 	if [ $NAME == "8" ]; then
+	  echo "[1/6]-Download cloud-init images $NAME_VM"
+		wget https://dl.rockylinux.org/pub/rocky/8/images/x86_64/Rocky-8-GenericCloud-Base.latest.x86_64.qcow2 -P $IMAGESPOOL
+    qemu-img resize $IMAGESPOOL/Rocky-8-GenericCloud-Base.latest.x86_64.qcow2 +5G
+    echo "[2/6]-Create VM"
+    qm create $UUID_VM --name $NAME_VM --ostype l24 --cpu cputype=host --cores $CORES --socket 1 --memory $MEMORY --scsihw virtio-scsi-pci --net0 virtio,bridge=$NET
+    echo "[3/6]-Configure VM"
+    qm importdisk $UUID_VM $IMAGESPOOL/Rocky-8-GenericCloud-Base.latest.x86_64.qcow2 $POOL
+    qm set $UUID_VM --scsihw virtio-scsi-pci --scsi0 $POOL:vm-$UUID_VM-disk-0
+    qm set $UUID_VM --boot c --bootdisk scsi0
+    echo "[5/6]-Configure Cloud-init"
+    qm set $UUID_VM --ide2 $POOL:cloudinit
+    qm set $UUID_VM --ipconfig0 ip=dhcp
+    qm set $UUID_VM --ciuser images --cipassword 'imageshub'
+    qm set $UUID_VM --sshkey "$(cat ~/.ssh/id_rsa.pub)"
+    echo "[5/6]-Saving a VM as a template "
+    qm template $UUID_VM
+    echo "[6/6]-Clearing the directory $IMAGESPOOL"
+    removeimgase
+	elif [ $NAME == "9" ]; then
+    local UUID_VM=9011
+    local NAME_VM=rockylinux-9
+    echo "[1/6]-Download cloud-init images $NAME_VM"
+		wget https://dl.rockylinux.org/pub/rocky/9/images/x86_64/Rocky-9-GenericCloud-Base.latest.x86_64.qcow2 -P $IMAGESPOOL
+    qemu-img resize $IMAGESPOOL/Rocky-9-GenericCloud-Base.latest.x86_64.qcow2 +5G
+    echo "[2/6]-Create VM"
+    qm create $UUID_VM --name $NAME_VM --ostype l24 --cpu cputype=host --cores $CORES --socket 1 --memory $MEMORY --scsihw virtio-scsi-pci --net0 virtio,bridge=$NET
+    echo "[3/6]-Configure VM"
+    qm importdisk $UUID_VM $IMAGESPOOL/Rocky-9-GenericCloud-Base.latest.x86_64.qcow2 $POOL
+    qm set $UUID_VM --scsihw virtio-scsi-pci --scsi0 $POOL:vm-$UUID_VM-disk-0
+    qm set $UUID_VM --boot c --bootdisk scsi0
+    echo "[5/6]-Configure Cloud-init"
+    qm set $UUID_VM --ide2 $POOL:cloudinit
+    qm set $UUID_VM --ipconfig0 ip=dhcp
+    qm set $UUID_VM --ciuser images --cipassword 'imageshub'
+    qm set $UUID_VM --sshkey "$(cat ~/.ssh/id_rsa.pub)"
+    echo "[5/6]-Saving a VM as a template "
+    qm template $UUID_VM
+    echo "[6/6]-Clearing the directory $IMAGESPOOL"
+    removeimgase
+  elif [ $NAME == "10" ]; then
+    local UUID_VM=9012
+    local NAME_VM=rockylinux-10
+    echo "[1/6]-Download cloud-init images $NAME_VM"
+		wget https://dl.rockylinux.org/pub/rocky/10/images/x86_64/Rocky-10-GenericCloud-Base.latest.x86_64.qcow2 -P $IMAGESPOOL
+    qemu-img resize $IMAGESPOOL/Rocky-10-GenericCloud-Base.latest.x86_64.qcow2 +5G
+    echo "[2/6]-Create VM"
+    qm create $UUID_VM --name $NAME_VM --ostype l24 --cpu cputype=host --cores $CORES --socket 1 --memory $MEMORY --scsihw virtio-scsi-pci --net0 virtio,bridge=$NET
+    echo "[3/6]-Configure VM"
+    qm importdisk $UUID_VM $IMAGESPOOL/Rocky-10-GenericCloud-Base.latest.x86_64.qcow2 $POOL
+    qm set $UUID_VM --scsihw virtio-scsi-pci --scsi0 $POOL:vm-$UUID_VM-disk-0
+    qm set $UUID_VM --boot c --bootdisk scsi0
+    echo "[5/6]-Configure Cloud-init"
+    qm set $UUID_VM --ide2 $POOL:cloudinit
+    qm set $UUID_VM --ipconfig0 ip=dhcp
+    qm set $UUID_VM --ciuser images --cipassword 'imageshub'
+    qm set $UUID_VM --sshkey "$(cat ~/.ssh/id_rsa.pub)"
+    echo "[5/6]-Saving a VM as a template "
+    qm template $UUID_VM
+    echo "[6/6]-Clearing the directory $IMAGESPOOL"
+	else 
+		echo "There is no such version"
+    removeimgase
+	fi
+}
+function debianlinux() {
+  local UUID_VM=9020
+  local NAME_VM=debianlinux-11
+ 	if [ $NAME == "11" ]; then
+    echo "[1/6]-Download cloud-init images $NAME_VM"
+		wget https://cloud.debian.org/images/cloud/bullseye/20250801-2191/debian-11-genericcloud-amd64-20250801-2191.qcow2 -P $IMAGESPOOL
+    qemu-img resize $IMAGESPOOL/debian-11-genericcloud-amd64-20250801-2191.qcow2 +12G
+    echo "[2/6]-Create VM"
+    qm create $UUID_VM --name $NAME_VM --ostype l24 --cpu cputype=host --cores $CORES --socket 1 --memory $MEMORY --scsihw virtio-scsi-pci --net0 virtio,bridge=$NET
+    echo "[3/6]-Configure VM"
+    qm importdisk $UUID_VM $IMAGESPOOL/debian-11-genericcloud-amd64-20250801-2191.qcow2 $POOL
+    qm set $UUID_VM --scsihw virtio-scsi-pci --scsi0 $POOL:vm-$UUID_VM-disk-0
+    qm set $UUID_VM --boot c --bootdisk scsi0
+    echo "[5/6]-Configure Cloud-init"
+    qm set $UUID_VM --ide2 $POOL:cloudinit
+    qm set $UUID_VM --ipconfig0 ip=dhcp
+    qm set $UUID_VM --ciuser images --cipassword 'imageshub'
+    qm set $UUID_VM --sshkey "$(cat ~/.ssh/id_rsa.pub)"
+    echo "[5/6]-Saving a VM as a template "
+    qm template $UUID_VM
+    echo "[6/6]-Clearing the directory $IMAGESPOOL"
+    removeimgase 
+	elif [ $NAME == "12" ]; then
+    local UUID_VM=9021
+    local NAME_VM=debianlinux-12
+		echo "[1/6]-Download cloud-init images $NAME_VM"
+		wget https://cloud.debian.org/images/cloud/bookworm/20250804-2194/debian-12-genericcloud-amd64-20250804-2194.qcow2 -P $IMAGESPOOL
+    qemu-img resize $IMAGESPOOL/debian-12-genericcloud-amd64-20250804-2194.qcow2 +12G
+    echo "[2/6]-Create VM"
+    qm create $UUID_VM --name $NAME_VM --ostype l24 --cpu cputype=host --cores $CORES --socket 1 --memory $MEMORY --scsihw virtio-scsi-pci --net0 virtio,bridge=$NET
+    echo "[3/6]-Configure VM"
+    qm importdisk $UUID_VM $IMAGESPOOL/debian-12-genericcloud-amd64-20250804-2194.qcow2 $POOL
+    qm set $UUID_VM --scsihw virtio-scsi-pci --scsi0 $POOL:vm-$UUID_VM-disk-0
+    qm set $UUID_VM --boot c --bootdisk scsi0
+    echo "[5/6]-Configure Cloud-init"
+    qm set $UUID_VM --ide2 $POOL:cloudinit
+    qm set $UUID_VM --ipconfig0 ip=dhcp
+    qm set $UUID_VM --ciuser images --cipassword 'imageshub'
+    qm set $UUID_VM --sshkey "$(cat ~/.ssh/id_rsa.pub)"
+    echo "[5/6]-Saving a VM as a template "
+    qm template $UUID_VM
+    echo "[6/6]-Clearing the directory $IMAGESPOOL"
+    removeimgase
+	else 
+		echo "There is no such version"
+	fi
+}
+function fedoralinux() {
+    local UUID_VM=9030
+    local NAME_VM=fedoralinux-server42
+		echo "[1/6]-Download cloud-init images $NAME_VM"
+		wget https://download.fedoraproject.org/pub/fedora/linux/releases/42/Server/x86_64/images/Fedora-Server-Guest-Generic-42-1.1.x86_64.qcow2 -P $IMAGESPOOL
+    qemu-img resize $IMAGESPOOL/Fedora-Server-Guest-Generic-42-1.1.x86_64.qcow2 +5G
+    echo "[2/6]-Create VM"
+    qm create $UUID_VM --name $NAME_VM --ostype l24 --cpu cputype=host --cores $CORES --socket 1 --memory $MEMORY --scsihw virtio-scsi-pci --net0 virtio,bridge=$NET
+    echo "[3/6]-Configure VM"
+    qm importdisk $UUID_VM $IMAGESPOOL/Fedora-Server-Guest-Generic-42-1.1.x86_64.qcow2 $POOL
+    qm set $UUID_VM --scsihw virtio-scsi-pci --scsi0 $POOL:vm-$UUID_VM-disk-0
+    qm set $UUID_VM --boot c --bootdisk scsi0
+    echo "[5/6]-Configure Cloud-init"
+    qm set $UUID_VM --ide2 $POOL:cloudinit
+    qm set $UUID_VM --ipconfig0 ip=dhcp
+    qm set $UUID_VM --ciuser images --cipassword 'imageshub'
+    echo "[5/6]-Saving a VM as a template "
+    qm template $UUID_VM
+    echo "[6/6]-Clearing the directory $IMAGESPOOL"
+    removeimgase
+}
+function centoslinux() {
+    local UUID_VM=9040
+    local NAME_VM=centoslinux-stream-10
+    echo "[1/6]-Download cloud-init images $NAME_VM"
+		wget https://cloud.centos.org/centos/10-stream/x86_64/images/CentOS-Stream-GenericCloud-10-latest.x86_64.qcow2 -P $IMAGESPOOL
+    qemu-img resize $IMAGESPOOL/CentOS-Stream-GenericCloud-10-latest.x86_64.qcow2 +5G
+    echo "[2/6]-Create VM"
+    qm create $UUID_VM --name $NAME_VM --ostype l24 --cpu cputype=host --cores $CORES --socket 1 --memory $MEMORY --scsihw virtio-scsi-pci --net0 virtio,bridge=$NET
+    echo "[3/6]-Configure VM"
+    qm importdisk $UUID_VM $IMAGESPOOL/CentOS-Stream-GenericCloud-10-latest.x86_64.qcow2 $POOL
+    qm set $UUID_VM --scsihw virtio-scsi-pci --scsi0 $POOL:vm-$UUID_VM-disk-0
+    qm set $UUID_VM --boot c --bootdisk scsi0
+    echo "[5/6]-Configure Cloud-init"
+    qm set $UUID_VM --ide2 $POOL:cloudinit
+    qm set $UUID_VM --ipconfig0 ip=dhcp
+    qm set $UUID_VM --ciuser images --cipassword 'imageshub'
+    qm set $UUID_VM --sshkey "$(cat ~/.ssh/id_rsa.pub)"
+    echo "[5/6]-Saving a VM as a template "
+    qm template $UUID_VM
+    echo "[6/6]-Clearing the directory $IMAGESPOOL"
+    removeimgase
+}
+
+while [ -n "$1" ]
+	do
+    case "$1" in
+    alma )almalinux;;
+	  ubuntu )ubuntulinux;;
+		debian )debianlinux;;
+		rocky )rockylinux;;
+		centos )centoslinux;;
+		fedora )fedoralinux;;
+		help )helpcli;;
+		esac
+	shift
+done
+
+
+
