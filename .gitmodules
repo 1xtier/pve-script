@@ -1,0 +1,3 @@
+[submodule "tf/pve-lxc"]
+	path = tf/pve-lxc
+	url = https://github.com/1xtier/IaC-pve-lxc.git
